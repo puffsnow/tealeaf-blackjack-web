@@ -1,0 +1,7 @@
+<h2><%= session[:username] %> You have $<%= session[:chips] %>.</h2>
+
+<h3>Please input your bet:</h3>
+<form action='/Bet' method='post'>
+  <input type='text' name='bet'/>
+  <input type='submit' class='btn'/>
+</form>

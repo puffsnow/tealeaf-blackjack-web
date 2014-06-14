@@ -1,0 +1,33 @@
+<p>
+  <h3>Dealer's cards:</h3>
+  <ul>
+    <% session[:dealer_card].each do |card| %>
+      <img src="<%= CardToImageFileSrc(card) %>" />
+    <% end %>
+  </ul>
+</p>
+
+<p>
+  <h3>Player's cards:</h3>
+  <ul>
+    <% session[:player_card].each do |card| %>
+      <img src="<%= CardToImageFileSrc(card) %>" />
+    <% end %>
+  </ul>
+</p>
+
+<div>
+  <% if @show_command_button %>
+  <form action="/Game/Player/Hit" method="post">
+    <button class="btn">Hit</button>
+  </form>
+  <form action="/Game/Player/Stay" method="post">
+    <button class="btn">Stay</button>
+  </form>
+  <% end %>
+</div>
+
+<p>
+  <%= session[:username] + ", your current score is " + CalculateScore(session[:player_card]).to_s + "." %><br />
+  <%= "You bet $" + session[:bet].to_s + " in this round, and you leave $" + session[:chips].to_s %>
+</p>
