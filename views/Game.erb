@@ -17,12 +17,17 @@
 </p>
 
 <div>
-  <% if @show_command_button %>
+  <% if @show_player_command_button %>
   <form action="/Game/Player/Hit" method="post">
     <button class="btn">Hit</button>
   </form>
   <form action="/Game/Player/Stay" method="post">
     <button class="btn">Stay</button>
+  </form>
+  <% end %>
+  <% if @show_dealer_command_button %>
+  <form action="/Game/Dealer/Turn" method="post">
+    <button class="btn">Dealer's next step</button>
   </form>
   <% end %>
 </div>

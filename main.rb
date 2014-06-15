@@ -51,23 +51,22 @@ post '/Game/Player/Hit' do
   player_score = CalculateScore(session[:player_card])
   if player_score > 21
     @error = "Sorry, you busted."
-    @show_command_button = false
+    @show_player_command_button = false
   elsif player_score == 21
     @success = "Congratulation! You Blackjack!"
-    @show_command_button = false
-  else
+    @show_player_command_button = false
   end
   erb :Game
 end
 
 post '/Game/Player/Stay' do
   @success = "OK, wait for dealer."
-  @show_command_button = false
+  @show_player_command_button = false
   erb :Game
 end
 
 before do
-  @show_command_button = true
+  @show_player_command_button = true
 end
 
 helpers do
