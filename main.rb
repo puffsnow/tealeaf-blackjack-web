@@ -31,12 +31,11 @@ end
 
 post '/Bet' do
   bet = params[:bet].to_i
-  if bet <= 0 || bet > session[:Chips]
+  if bet <= 0 || bet > session[:chips]
     @error = "Please type in your bet and it should be the amount you can afford."
     return erb :bet
   end
 
-  session[:chips] = session[:chips] - bet
   session[:bet] = bet
   InitialRound()
   redirect to('/Game')
@@ -51,22 +50,65 @@ post '/Game/Player/Hit' do
   player_score = CalculateScore(session[:player_card])
   if player_score > 21
     @error = "Sorry, you busted."
-    @show_player_command_button = false
+    @show_command_type = 'result'
+    session[:winner] = 'dealer'
   elsif player_score == 21
     @success = "Congratulation! You Blackjack!"
-    @show_player_command_button = false
+    @show_command_type = 'result'
+    session[:winner] = 'player'
   end
   erb :Game
 end
 
 post '/Game/Player/Stay' do
   @success = "OK, wait for dealer."
-  @show_player_command_button = false
+  @show_command_type = 'dealer'
   erb :Game
 end
 
+post '/Game/Dealer/Turn' do
+  dealer_score = CalculateScore(session[:dealer_card])
+  if dealer_score > 21
+    @success = "Oh! Dealer busted!"
+    @show_command_type = 'result'
+    session[:winner] = 'player'
+  elsif dealer_score == 21
+    @error = "NO! Dealer BLACKJACK!"
+    @show_command_type = 'result'
+    session[:winner] = 'dealer'
+  elsif dealer_score >= 17
+    @success = "Dealer is end his turn:)"
+    @show_command_type = 'result'
+  else
+    @show_command_type = 'dealer'
+    session[:dealer_card] << session[:deck].pop
+  end
+  erb :Game
+end
+
+post '/Game/Result' do
+
+  player_score = CalculateScore(session[:player_card])
+  dealer_score = CalculateScore(session[:dealer_card])
+  if session[:winner] == 'player'
+    session[:chips] += session[:bet]
+  elsif session[:winner] == 'dealer'
+    session[:chips] -= session[:bet]
+  elsif player_score > dealer_score
+    session[:winner] = 'player'
+    session[:chips] += session[:bet]
+  elsif player_score == dealer_score
+    session[:winner] = 'draw'
+  else
+    session[:winner] = 'dealer'
+    session[:chips] -= session[:bet]
+  end
+
+  erb :Result
+end
+
 before do
-  @show_player_command_button = true
+  @show_command_type = 'player'
 end
 
 helpers do
@@ -81,6 +123,7 @@ helpers do
     session[:dealer_card] << session[:deck].pop
     session[:player_card] << session[:deck].pop
     session[:player_card] << session[:deck].pop
+    session[:winner] = nil
   end
 
   def ClearSessionData

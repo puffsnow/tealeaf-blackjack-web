@@ -17,7 +17,7 @@
 </p>
 
 <div>
-  <% if @show_player_command_button %>
+  <% if @show_command_type == 'player' %>
   <form action="/Game/Player/Hit" method="post">
     <button class="btn">Hit</button>
   </form>
@@ -25,9 +25,14 @@
     <button class="btn">Stay</button>
   </form>
   <% end %>
-  <% if @show_dealer_command_button %>
+  <% if @show_command_type == 'dealer' %>
   <form action="/Game/Dealer/Turn" method="post">
     <button class="btn">Dealer's next step</button>
+  </form>
+  <% end %>
+  <% if @show_command_type == 'result' %>
+  <form action="/Game/Result" method="post">
+    <button class="btn">Result</button>
   </form>
   <% end %>
 </div>
