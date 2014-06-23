@@ -1,7 +1,8 @@
 <p>
   <h3>Dealer's cards:</h3>
   <ul>
-    <% session[:dealer_card].each do |card| %>
+    <img src="<%= @show_command_type == 'player' ? '/images/cards/cover.jpg' : CardToImageFileSrc(session[:dealer_card][0]) %>" />
+    <% session[:dealer_card][1..-1].each do |card| %>
       <img src="<%= CardToImageFileSrc(card) %>" />
     <% end %>
   </ul>
@@ -39,5 +40,5 @@
 
 <p>
   <%= session[:username] + ", your current score is " + CalculateScore(session[:player_card]).to_s + "." %><br />
-  <%= "You bet $" + session[:bet].to_s + " in this round, and you leave $" + session[:chips].to_s %>
+  <%= "You bet $" + session[:bet].to_s + " in this round, and you leave $" + (session[:chips] + session[:bet]).to_s %>
 </p>

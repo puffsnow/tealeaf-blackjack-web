@@ -26,6 +26,8 @@ end
 
 get '/Bet' do
   redirect to('/NewGame') until UserIsValid?
+  session[:bet] = 0
+
   erb :Bet
 end
 
@@ -37,11 +39,22 @@ post '/Bet' do
   end
 
   session[:bet] = bet
+  session[:chips] = session[:chips] - bet
   InitialRound()
   redirect to('/Game')
 end
 
 get '/Game' do
+  player_score = CalculateScore(session[:player_card])
+  if player_score > 21
+    @error = "Sorry, you busted."
+    @show_command_type = 'result'
+    session[:winner] = 'dealer'
+  elsif player_score == 21
+    @success = "Congratulation! You Blackjack!"
+    @show_command_type = 'result'
+    session[:winner] = 'player'
+  end
   erb :Game
 end
 
@@ -91,20 +104,35 @@ post '/Game/Result' do
   player_score = CalculateScore(session[:player_card])
   dealer_score = CalculateScore(session[:dealer_card])
   if session[:winner] == 'player'
-    session[:chips] += session[:bet]
+    session[:chips] += 2 * session[:bet]
   elsif session[:winner] == 'dealer'
-    session[:chips] -= session[:bet]
   elsif player_score > dealer_score
     session[:winner] = 'player'
-    session[:chips] += session[:bet]
+    session[:chips] += 2 * session[:bet]
   elsif player_score == dealer_score
     session[:winner] = 'draw'
+    session[:chips] += session[:bet]
   else
     session[:winner] = 'dealer'
-    session[:chips] -= session[:bet]
   end
 
+  if session[:winner] == 'player'
+    @success = "Congratulation! You win $" + session[:bet].to_s + "!"
+  elsif session[:winner] == 'dealer'
+    @error = "Oh! No! You lose $" + session[:bet].to_s + "!"
+  else
+    @success = "Draw. You can take your bet back."
+  end
+    
   erb :Result
+end
+
+post '/NewRound' do
+  redirect to('/Bet')
+end
+
+post '/End' do
+  redirect to('/NewGame')
 end
 
 before do
