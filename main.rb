@@ -10,6 +10,7 @@ end
 
 get '/NewGame' do
   ClearSessionData()
+  @info = "Welcome! Player! Please type your name to start a new game!"
   erb :NewGame
 end
 
@@ -27,7 +28,13 @@ end
 get '/Bet' do
   redirect to('/NewGame') until UserIsValid?
   session[:bet] = 0
-
+  if session[:round] == 0
+    @info = "Welcome! " + session[:username] + "! Let's start the game. You have $" + session[:chips].to_s + " in the beginning. Please type your bet in this round."
+  elsif session[:chips] == 0
+    @error = "Oops, you have lose all chips. Please start a new game."
+  else
+    @info = session[:username] + ", you have $" + session[:chips].to_s + " now. How much you want to bet in next round?"
+  end
   erb :Bet
 end
 
@@ -40,6 +47,7 @@ post '/Bet' do
 
   session[:bet] = bet
   session[:chips] = session[:chips] - bet
+  session[:round] += 1
   InitialRound()
   redirect to('/Game')
 end
@@ -74,7 +82,19 @@ post '/Game/Player/Hit' do
 end
 
 post '/Game/Player/Stay' do
-  @success = "OK, wait for dealer."
+  dealer_score = CalculateScore(session[:dealer_card])
+  if dealer_score > 21
+    @success = "Oh! Dealer busted!"
+    @show_command_type = 'result'
+    session[:winner] = 'player'
+  elsif dealer_score == 21
+    @error = "NO! Dealer BLACKJACK!"
+    @show_command_type = 'result'
+    session[:winner] = 'dealer'
+  elsif dealer_score >= 17
+    @success = "Dealer is end his turn:)"
+    @show_command_type = 'result'
+  end
   @show_command_type = 'dealer'
   erb :Game
 end
@@ -157,6 +177,7 @@ helpers do
   def ClearSessionData
     session[:username] = nil
     session[:chips] = nil
+    session[:round] = 0
   end
 
   def UserIsValid? 

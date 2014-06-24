@@ -1,13 +1,9 @@
-<h2><%= session[:username] %> You have $<%= session[:chips] %>.</h2>
-
 <% if session[:chips] > 0 %>
-<h3>Please input your bet:</h3>
 <form action='/Bet' method='post'>
-  <input type='text' name='bet'/>
+  <input type='text' name='bet' placeholder="Your bet"/>
   <input type='submit' class='btn'/>
 </form>
 <% else %>
-<h3>Sorry, you have no chips, please start a new game:</h3>
 <form action='/End' method='post'>
   <button class="btn">New Game</button>
 </form>
