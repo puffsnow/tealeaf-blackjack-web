@@ -17,28 +17,27 @@
   </ul>
 </p>
 
-<div>
+<p>
   <% if @show_command_type == 'player' %>
-  <form action="/Game/Player/Hit" method="post">
-    <button class="btn">Hit</button>
+  <form action="/Game/Player/Hit" method="post" style="float:left">
+    <button class="btn btn-success">Hit</button>
   </form>
   <form action="/Game/Player/Stay" method="post">
-    <button class="btn">Stay</button>
+    <button class="btn btn-warning">Stay</button>
   </form>
   <% end %>
   <% if @show_command_type == 'dealer' %>
   <form action="/Game/Dealer/Turn" method="post">
-    <button class="btn">Dealer's next step</button>
+    <button class="btn btn-primary">Dealer's next step</button>
   </form>
   <% end %>
   <% if @show_command_type == 'result' %>
   <form action="/Game/Result" method="post">
-    <button class="btn">Result</button>
+    <button class="btn btn-primary">Result</button>
   </form>
   <% end %>
-</div>
-
-<p>
-  <%= session[:username] + ", your current score is " + CalculateScore(session[:player_card]).to_s + "." %><br />
-  <%= "You have $" + (session[:chips] + session[:bet]).to_s + " in total. You bet $" + session[:bet].to_s + " in this round." %>
 </p>
+
+<div class="alert alert-info">
+  <%= "You have $" + (session[:chips] + session[:bet]).to_s + " in total. You bet $" + session[:bet].to_s + " in this round." %>
+</div>

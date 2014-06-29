@@ -62,6 +62,8 @@ get '/Game' do
     @success = "Congratulation! You Blackjack!"
     @show_command_type = 'result'
     session[:winner] = 'player'
+  else
+    @info = session[:username] + ", it's your turn, you can hit to pick one more cards or stay to wait for dealer's turn."
   end
   erb :Game
 end
@@ -77,6 +79,8 @@ post '/Game/Player/Hit' do
     @success = "Congratulation! You Blackjack!"
     @show_command_type = 'result'
     session[:winner] = 'player'
+  else
+    @info = session[:username] + ", you pick a card and your current score is " + player_score.to_s + ". What's your next step?"
   end
   erb :Game
 end
@@ -94,8 +98,10 @@ post '/Game/Player/Stay' do
   elsif dealer_score >= 17
     @success = "Dealer is end his turn:)"
     @show_command_type = 'result'
+  else
+    @info = "It's dealer's turn, please click button [Dealer's next step]."
+    @show_command_type = 'dealer'
   end
-  @show_command_type = 'dealer'
   erb :Game
 end
 
@@ -114,6 +120,7 @@ post '/Game/Dealer/Turn' do
     @show_command_type = 'result'
   else
     @show_command_type = 'dealer'
+    @info = "Dealer picks a card, please click button [Dealer's next step]."
     session[:dealer_card] << session[:deck].pop
   end
   erb :Game
