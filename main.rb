@@ -41,7 +41,7 @@ post '/Bet' do
   bet = params[:bet].to_i
   if bet <= 0 || bet > session[:chips]
     @error = "Please type in your bet and it should be the amount you can afford."
-    return erb :bet
+    return erb :Bet
   end
 
   session[:bet] = bet
