@@ -63,7 +63,7 @@ get '/Game' do
     @show_command_type = 'result'
     session[:winner] = 'player'
   else
-    @info = session[:username] + ", it's your turn, you can hit to pick one more cards or stay to wait for dealer's turn."
+    @info = session[:username] + ", your current score is " + player_score.to_s + ". It's your turn, you can hit to pick one more cards or stay to wait for dealer's turn."
   end
   erb :Game
 end
@@ -74,11 +74,9 @@ post '/Game/Player/Hit' do
   if player_score > 21
     @error = "Sorry, you busted."
     @show_command_type = 'result'
-    session[:winner] = 'dealer'
   elsif player_score == 21
     @success = "Congratulation! You Blackjack!"
     @show_command_type = 'result'
-    session[:winner] = 'player'
   else
     @info = session[:username] + ", you pick a card and your current score is " + player_score.to_s + ". What's your next step?"
   end
@@ -90,13 +88,11 @@ post '/Game/Player/Stay' do
   if dealer_score > 21
     @success = "Oh! Dealer busted!"
     @show_command_type = 'result'
-    session[:winner] = 'player'
   elsif dealer_score == 21
-    @error = "NO! Dealer BLACKJACK!"
+    @error = "NO! Dealer gets BLACKJACK!"
     @show_command_type = 'result'
-    session[:winner] = 'dealer'
   elsif dealer_score >= 17
-    @success = "Dealer is end his turn:)"
+    @success = "Dealer is end his turn."
     @show_command_type = 'result'
   else
     @info = "It's dealer's turn, please click button [Dealer's next step]."
@@ -106,22 +102,20 @@ post '/Game/Player/Stay' do
 end
 
 post '/Game/Dealer/Turn' do
+  session[:dealer_card] << session[:deck].pop
   dealer_score = CalculateScore(session[:dealer_card])
   if dealer_score > 21
-    @success = "Oh! Dealer busted!"
+    @success = "Oh! Dealer busted! :P"
     @show_command_type = 'result'
-    session[:winner] = 'player'
   elsif dealer_score == 21
-    @error = "NO! Dealer BLACKJACK!"
+    @error = "NO! Dealer gets BLACKJACK!"
     @show_command_type = 'result'
-    session[:winner] = 'dealer'
   elsif dealer_score >= 17
-    @success = "Dealer is end his turn:)"
+    @success = "Dealer is end his turn."
     @show_command_type = 'result'
   else
     @show_command_type = 'dealer'
     @info = "Dealer picks a card, please click button [Dealer's next step]."
-    session[:dealer_card] << session[:deck].pop
   end
   erb :Game
 end
@@ -130,25 +124,38 @@ post '/Game/Result' do
 
   player_score = CalculateScore(session[:player_card])
   dealer_score = CalculateScore(session[:dealer_card])
-  if session[:winner] == 'player'
-    session[:chips] += 2 * session[:bet]
-  elsif session[:winner] == 'dealer'
+
+  if player_score == 21
+    result_message = "You get BLACKJACK. "
+    winner = "player"
+  elsif player_score > 21
+    result_message = "You Busted. "
+    winner = "dealer"
+  elsif dealer_score == 21
+    result_message = "Dealer get BLACKJACK. "
+    winner = "dealer"
+  elsif dealer_score > 21
+    result_message = "Dealer busted."
+    winner = "player"
   elsif player_score > dealer_score
-    session[:winner] = 'player'
-    session[:chips] += 2 * session[:bet]
-  elsif player_score == dealer_score
-    session[:winner] = 'draw'
-    session[:chips] += session[:bet]
+    result_message = "Your score is " + player_score.to_s + ", and dealer's score is " + dealer_score.to_s + ". "
+    winner = "player"
+  elsif player_score < dealer_score
+    result_message = "Your score is " + player_score.to_s + ", and dealer's score is " + dealer_score.to_s + ". "
+    winner = "dealer"
   else
-    session[:winner] = 'dealer'
+    result_message = "Your score is " + player_score.to_s + ", and dealer's score is " + dealer_score.to_s + ". "
+    winner = "draw"
   end
 
-  if session[:winner] == 'player'
-    @success = "Congratulation! You win $" + session[:bet].to_s + "!"
-  elsif session[:winner] == 'dealer'
-    @error = "Oh! No! You lose $" + session[:bet].to_s + "!"
+  if winner == 'player'
+    session[:chips] += 2 * session[:bet]
+    @success = result_message + "You win the game and the bet in this round!"
+  elsif winner == 'dealer'
+    @error = result_message + "Sorry, you lose the game and your bet."
   else
-    @success = "Draw. You can take your bet back."
+    session[:chips] += session[:bet]
+    @info = result_message + "This game is draw, you can take your bet back."
   end
     
   erb :Result

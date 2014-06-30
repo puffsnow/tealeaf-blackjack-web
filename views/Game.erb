@@ -1,9 +1,9 @@
 <p>
   <h3>Dealer's cards:</h3>
   <ul>
-    <img src="<%= @show_command_type == 'player' ? '/images/cards/cover.jpg' : CardToImageFileSrc(session[:dealer_card][0]) %>" />
+    <img class="CardImg" src="<%= @show_command_type == 'player' ? '/images/cards/cover.jpg' : CardToImageFileSrc(session[:dealer_card][0]) %>" />
     <% session[:dealer_card][1..-1].each do |card| %>
-      <img src="<%= CardToImageFileSrc(card) %>" />
+      <img class="CardImg" src="<%= CardToImageFileSrc(card) %>" />
     <% end %>
   </ul>
 </p>
@@ -12,7 +12,7 @@
   <h3>Player's cards:</h3>
   <ul>
     <% session[:player_card].each do |card| %>
-      <img src="<%= CardToImageFileSrc(card) %>" />
+      <img class="CardImg" src="<%= CardToImageFileSrc(card) %>" />
     <% end %>
   </ul>
 </p>
