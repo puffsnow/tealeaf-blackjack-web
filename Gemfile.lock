@@ -1,17 +1,42 @@
 GEM
-  remote: http://rubygems.org/
+  remote: https://rubygems.org/
   specs:
+    addressable (2.3.6)
     coderay (1.0.9)
     daemons (1.1.9)
     eventmachine (1.0.0)
+    eventmachine (1.0.0-x86-mingw32)
+    excon (0.37.0)
+    heroku (3.8.4)
+      heroku-api (~> 0.3.17)
+      launchy (>= 0.3.2)
+      netrc (~> 0.7.7)
+      rest-client (~> 1.6.1)
+      rubyzip
+    heroku-api (0.3.18)
+      excon (~> 0.27)
+      multi_json (~> 1.8)
+    launchy (2.4.2)
+      addressable (~> 2.3)
     method_source (0.8.1)
+    mime-types (2.3)
+    multi_json (1.10.1)
+    netrc (0.7.7)
     pry (0.9.12.1)
       coderay (~> 1.0.5)
       method_source (~> 0.8)
       slop (~> 3.4)
+    pry (0.9.12.1-x86-mingw32)
+      coderay (~> 1.0.5)
+      method_source (~> 0.8)
+      slop (~> 3.4)
+      win32console (~> 1.3)
     rack (1.5.2)
     rack-protection (1.3.2)
       rack
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
+    rubyzip (1.1.4)
     sinatra (1.3.4)
       rack (~> 1.4)
       rack-protection (~> 1.3)
@@ -22,11 +47,14 @@ GEM
       eventmachine (>= 0.12.6)
       rack (>= 1.0.0)
     tilt (1.3.3)
+    win32console (1.3.2-x86-mingw32)
 
 PLATFORMS
   ruby
+  x86-mingw32
 
 DEPENDENCIES
+  heroku
   pry
   sinatra
   thin
