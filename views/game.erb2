@@ -1,9 +1,9 @@
 <p>
   <h3>Dealer's cards:</h3>
   <ul>
-    <img class="CardImg" src="<%= @show_command_type == 'player' ? '/images/cards/cover.jpg' : CardToImageFileSrc(session[:dealer_card][0]) %>" />
+    <img class="CardImg" src="<%= @show_command_type == 'player' ? '/images/cards/cover.jpg' : card_to_image_file_src(session[:dealer_card][0]) %>" />
     <% session[:dealer_card][1..-1].each do |card| %>
-      <img class="CardImg" src="<%= CardToImageFileSrc(card) %>" />
+      <img class="CardImg" src="<%= card_to_image_file_src(card) %>" />
     <% end %>
   </ul>
 </p>
@@ -12,27 +12,27 @@
   <h3>Player's cards:</h3>
   <ul>
     <% session[:player_card].each do |card| %>
-      <img class="CardImg" src="<%= CardToImageFileSrc(card) %>" />
+      <img class="CardImg" src="<%= card_to_image_file_src(card) %>" />
     <% end %>
   </ul>
 </p>
 
 <p>
   <% if @show_command_type == 'player' %>
-  <form action="/Game/Player/Hit" method="post" style="float:left">
+  <form action="/game/player/hit" method="post" style="float:left">
     <button class="btn btn-success">Hit</button>
   </form>
-  <form action="/Game/Player/Stay" method="post">
+  <form action="/game/player/stay" method="post">
     <button class="btn btn-warning">Stay</button>
   </form>
   <% end %>
   <% if @show_command_type == 'dealer' %>
-  <form action="/Game/Dealer/Turn" method="post">
+  <form action="/game/dealer/turn" method="post">
     <button class="btn btn-primary">Dealer's next step</button>
   </form>
   <% end %>
   <% if @show_command_type == 'result' %>
-  <form action="/Game/Result" method="post">
+  <form action="/game/result" method="post">
     <button class="btn btn-primary">Result</button>
   </form>
   <% end %>

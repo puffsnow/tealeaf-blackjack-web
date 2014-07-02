@@ -1,31 +1,32 @@
 require 'rubygems'
 require 'sinatra'
+require 'sinatra/reloader'
 
 set :sessions, true
 
 get '/' do
-  redirect to('NewGame')
+  redirect to('new_game')
 end
 
-get '/NewGame' do
-  ClearSessionData()
+get '/new_game' do
+  clear_session_data()
   @info = "Welcome! Player! Please type your name to start a new game!"
-  erb :NewGame
+  erb :new_game
 end
 
-post '/NewGame' do
+post '/new_game' do
   if params[:username] == nil || params[:username] == ""
     @error = "Please type in your name."
-    return erb :NewGame
+    return erb :new_game
   end
   
   session[:username] = params[:username]
   session[:chips] = 500
-  redirect to('/Bet')
+  redirect to('/bet')
 end
 
-get '/Bet' do
-  redirect to('/NewGame') until UserIsValid?
+get '/bet' do
+  redirect to('/new_game') until user_is_valid?
   session[:bet] = 0
   if session[:round] == 0
     @info = "Welcome! " + session[:username] + "! Let's start the game. You have $" + session[:chips].to_s + " in the beginning. Please type your bet in this round."
@@ -34,42 +35,40 @@ get '/Bet' do
   else
     @info = session[:username] + ", you have $" + session[:chips].to_s + " now. How much you want to bet in next round?"
   end
-  erb :Bet
+  erb :bet
 end
 
-post '/Bet' do
+post '/bet' do
   bet = params[:bet].to_i
   if bet <= 0 || bet > session[:chips]
     @error = "Please type in your bet and it should be the amount you can afford."
-    return erb :Bet
+    return erb :bet
   end
 
   session[:bet] = bet
   session[:chips] = session[:chips] - bet
   session[:round] += 1
-  InitialRound()
-  redirect to('/Game')
+  initial_round()
+  redirect to('/game')
 end
 
-get '/Game' do
-  player_score = CalculateScore(session[:player_card])
+get '/game' do
+  player_score = calculate_score(session[:player_card])
   if player_score > 21
     @error = "Sorry, you busted."
     @show_command_type = 'result'
-    session[:winner] = 'dealer'
   elsif player_score == 21
     @success = "Congratulation! You Blackjack!"
     @show_command_type = 'result'
-    session[:winner] = 'player'
   else
     @info = session[:username] + ", your current score is " + player_score.to_s + ". It's your turn, you can hit to pick one more cards or stay to wait for dealer's turn."
   end
-  erb :Game
+  erb :game
 end
 
-post '/Game/Player/Hit' do
+post '/game/player/hit' do
   session[:player_card] << session[:deck].pop
-  player_score = CalculateScore(session[:player_card])
+  player_score = calculate_score(session[:player_card])
   if player_score > 21
     @error = "Sorry, you busted."
     @show_command_type = 'result'
@@ -79,11 +78,11 @@ post '/Game/Player/Hit' do
   else
     @info = session[:username] + ", you pick a card and your current score is " + player_score.to_s + ". What's your next step?"
   end
-  erb :Game
+  erb :game
 end
 
-post '/Game/Player/Stay' do
-  dealer_score = CalculateScore(session[:dealer_card])
+post '/game/player/stay' do
+  dealer_score = calculate_score(session[:dealer_card])
   if dealer_score > 21
     @success = "Oh! Dealer busted!"
     @show_command_type = 'result'
@@ -97,12 +96,12 @@ post '/Game/Player/Stay' do
     @info = "It's dealer's turn, please click button [Dealer's next step]."
     @show_command_type = 'dealer'
   end
-  erb :Game
+  erb :game
 end
 
-post '/Game/Dealer/Turn' do
+post '/game/dealer/turn' do
   session[:dealer_card] << session[:deck].pop
-  dealer_score = CalculateScore(session[:dealer_card])
+  dealer_score = calculate_score(session[:dealer_card])
   if dealer_score > 21
     @success = "Oh! Dealer busted! :P"
     @show_command_type = 'result'
@@ -116,13 +115,13 @@ post '/Game/Dealer/Turn' do
     @show_command_type = 'dealer'
     @info = "Dealer picks a card, please click button [Dealer's next step]."
   end
-  erb :Game
+  erb :game
 end
 
-post '/Game/Result' do
+post '/game/result' do
 
-  player_score = CalculateScore(session[:player_card])
-  dealer_score = CalculateScore(session[:dealer_card])
+  player_score = calculate_score(session[:player_card])
+  dealer_score = calculate_score(session[:dealer_card])
 
   if player_score == 21
     result_message = "You get BLACKJACK. "
@@ -157,15 +156,15 @@ post '/Game/Result' do
     @info = result_message + "This game is draw, you can take your bet back."
   end
     
-  erb :Result
+  erb :result
 end
 
-post '/NewRound' do
-  redirect to('/Bet')
+post '/new_round' do
+  redirect to('/bet')
 end
 
-post '/End' do
-  redirect to('/NewGame')
+post '/end' do
+  redirect to('/new_game')
 end
 
 before do
@@ -174,7 +173,7 @@ end
 
 helpers do
 
-  def InitialRound
+  def initial_round
     suits = ['C', 'D', 'H', 'S']
     values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
     session[:deck] = suits.product(values).shuffle!
@@ -187,19 +186,19 @@ helpers do
     session[:winner] = nil
   end
 
-  def ClearSessionData
+  def clear_session_data
     session[:username] = nil
     session[:chips] = nil
     session[:round] = 0
   end
 
-  def UserIsValid? 
+  def user_is_valid? 
     return false if session[:username] == nil || session[:username] == ""
     return false if session[:chips] < 0
     return true
   end
 
-  def CalculateScore(cards)
+  def calculate_score(cards)
     point = 0
     cards.each do |card|
       value = card[1]
@@ -218,7 +217,7 @@ helpers do
     point
   end
 
-  def CardToImageFileSrc(card)
+  def card_to_image_file_src(card)
     suit = card[0]
     value = card[1]
 

@@ -1,10 +1,10 @@
 <% if session[:chips] > 0 %>
-<form action='/Bet' method='post'>
+<form action='/bet' method='post'>
   <input type='text' name='bet' placeholder="Your bet"/>
   <input type='submit' class='btn'/>
 </form>
 <% else %>
-<form action='/End' method='post'>
+<form action='/end' method='post'>
   <button class="btn">New Game</button>
 </form>
 <% end %>

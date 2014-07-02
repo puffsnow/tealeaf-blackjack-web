@@ -1,3 +1,3 @@
-<form action="/NewRound" method="post">
+<form action="/new_round" method="post">
     <button class="btn">Next Round</button>
 </form>
